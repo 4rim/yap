@@ -50,34 +50,36 @@ lex(char *s, size_t len)
         curr = s;
         Tok *currtok = lex_malloc(sizeof(Tok));
         currtok->val = lex_malloc(sizeof(char)+1);
-        if (*curr == '\n'){
+        switch (*curr)
+        {
+        case '\n':
             s++;
             i++;
             tokptr++;
             continue; // ignore whitespace
+        case '{':
+            currtok->type = TOKEN_LBRACKET;
+            strncpy(currtok->val, curr, 1);
+            memcpy(tokptr, currtok, sizeof(Tok));
+        case '}':
+            currtok->type = TOKEN_RBRACKET;
+            strncpy(currtok->val, curr, 1);
+            memcpy(tokptr, currtok, sizeof(Tok));
+        case '(':
+            currtok->type = TOKEN_LPAREN;
+            strncpy(currtok->val, curr, 1);
+            memcpy(tokptr, currtok, sizeof(Tok));
+        case ')':
+            currtok->type = TOKEN_RPAREN;
+            strncpy(currtok->val, curr, 1);
+            memcpy(tokptr, currtok, sizeof(Tok));
         }
         if (*curr == ';' ||
             *curr == ':') {
             currtok->type = TOKEN_PUNCT;
             strncpy(currtok->val, curr, 1);
             memcpy(tokptr, currtok, sizeof(Tok));
-        } else if (*curr == '{') {
-            currtok->type = TOKEN_LBRACKET;
-            strncpy(currtok->val, curr, 1);
-            memcpy(tokptr, currtok, sizeof(Tok));
-        } else if (*curr == '}') {
-            currtok->type = TOKEN_RBRACKET;
-            strncpy(currtok->val, curr, 1);
-            memcpy(tokptr, currtok, sizeof(Tok));
-        } else if (*curr == '(') {
-            currtok->type = TOKEN_LPAREN;
-            strncpy(currtok->val, curr, 1);
-            memcpy(tokptr, currtok, sizeof(Tok));
-        } else if (*curr == ')') {
-            currtok->type = TOKEN_RPAREN;
-            strncpy(currtok->val, curr, 1);
-            memcpy(tokptr, currtok, sizeof(Tok));
-        }
+        } 
         else {
             s++;
             i++;
