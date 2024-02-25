@@ -4,10 +4,17 @@
 #include <string.h>
 #include "lexer.h"
 
+Entry keyword_dict[] = {
+    { LEX_YAP_TYPE_INT, "int" },
+    { LEX_YAP_TYPE_FLOAT, "float" },
+    { LEX_YAP_TYPE_SHORT, "short" },
+    { LEX_YAP_FUNC_PRINT, "print" }
+};
+
 void
 die(void)
 {
-    fprintf(stderr, "Oopsie...");
+    fprintf(stderr, "OOPS!");
     exit(EXIT_FAILURE);
 }
 
@@ -37,54 +44,81 @@ destroy_tok(Tok *t, size_t len)
     }
 }
 
-/* TODO: Make this with switch? */
+void lex_advance(Tok *in)
+{
+    
+}
+
+Tok *lex_peek(Tok *in)
+{
+    Tok *ret = in;
+    return ret;
+}
+
+/* TODO: Add peek function, refactor lex
+ * Note that as of now, "curr" refers to the entire string rather than one "token", leading to incorrect behaviour
+ * */
 Tok*
 lex(char *s, size_t len)
 {
+    // printf("Are we even getting here?!\n");
     Tok *res = create_tok(len * sizeof(Tok));
     Tok *tokptr = res;
     int i = 0;
 
     while (*s != '\0' || i < len){
-        char *curr;
-        curr = s;
+        char *curr = s;
         Tok *currtok = lex_malloc(sizeof(Tok));
-        currtok->val = lex_malloc(sizeof(char)+1);
+        currtok->val = lex_malloc(sizeof(char));
         switch (*curr)
         {
         case '\n':
             s++;
             i++;
             tokptr++;
-            continue; // ignore whitespace
+            break; // ignore whitespace
         case '{':
             currtok->type = TOKEN_LBRACKET;
             strncpy(currtok->val, curr, 1);
             memcpy(tokptr, currtok, sizeof(Tok));
+            break;
         case '}':
             currtok->type = TOKEN_RBRACKET;
             strncpy(currtok->val, curr, 1);
             memcpy(tokptr, currtok, sizeof(Tok));
+            break;
         case '(':
             currtok->type = TOKEN_LPAREN;
             strncpy(currtok->val, curr, 1);
             memcpy(tokptr, currtok, sizeof(Tok));
+            break;
         case ')':
             currtok->type = TOKEN_RPAREN;
             strncpy(currtok->val, curr, 1);
             memcpy(tokptr, currtok, sizeof(Tok));
-        }
-        if (*curr == ';' ||
-            *curr == ':') {
-            currtok->type = TOKEN_PUNCT;
+            break;
+        case ';':
+            currtok->type = TOKEN_SEMICOLON;
             strncpy(currtok->val, curr, 1);
             memcpy(tokptr, currtok, sizeof(Tok));
-        } 
-        else {
-            s++;
-            i++;
-            continue;
+            break;
+        case ':':
+            currtok->type = TOKEN_COLON;
+            strncpy(currtok->val, curr, 1);
+            memcpy(tokptr, currtok, sizeof(Tok));
+            break;
         }
+        // if (*curr == ';' ||
+        //     *curr == ':') {
+        //     currtok->type = TOKEN_SEMICOLON;
+        //     strncpy(currtok->val, curr, 1);
+        //     memcpy(tokptr, currtok, sizeof(Tok));
+        // } 
+        // else {
+        //    s++;
+        //    i++;
+        //    continue;
+        // }
         tokptr++;
         s++;
         i++;

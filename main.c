@@ -1,10 +1,15 @@
 #include "lexer.c"
 #include <stdlib.h>
 
+/* TODO: 
+ * main should take in a file name as input. For now, we are pretending that
+ * the first argument is the code line we are trying to lex, but this is
+ * obviously incorrect lexing in general. */
+
 void
 usage(void)
 {
-    printf("./main \"<string to be lexed>\"");
+    printf("./main \"<file name>\"");
     exit(EXIT_FAILURE);
 }
 
@@ -13,6 +18,7 @@ main(int argc, char **argv)
 {
     if (argc <= 1)
         usage();
+
     size_t len = strlen(argv[1]);
     Tok* ret = lex_malloc(len);
     int i = 0;
