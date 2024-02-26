@@ -116,7 +116,7 @@ tok_T*
 lex(char *s, size_t len)
 {
     // printf("Are we even getting here?!\n");
-    tok_T *res = tok_init(len * sizeof(tok_T), 0);
+    tok_T *res = calloc(len, sizeof(tok_T));
     tok_T *tokptr = res;
     int i = 0;
 

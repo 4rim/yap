@@ -18,13 +18,14 @@ usage(void)
 int
 main(int argc, char **argv)
 {
-    if (argc <= 1)
-        usage();
+    // if (argc <= 1)
+    //     usage();
 
-    size_t len = strlen(argv[1]);
+    char *content = "x = (a + b) * cat";
+
+    size_t len = strlen(content);
     tok_T* ret = lex_malloc(len);
-    int i = 0;
-    ret = lex(argv[1], len);
+    ret = lex(content, len);
 
     tok_T* t = ret;
 
@@ -32,14 +33,11 @@ main(int argc, char **argv)
         destroy_tok(ret, 1);
         return EXIT_SUCCESS;
     }
-
-    printf("[");
-    for (i = 0; i < ret->len - 1; ++i, ++t) {
-        printf("(%d, \"%s\")", t->type, t->val);
-        printf(" ");
+    
+    while (t->type != TOKEN_EOF) {
+        printf("(%d, \"%s\")\n", t->type, t->val);
+        t++;
     }
-    printf("(%d, \"%s\")", t->type, t->val);
-    printf("]\n");
 
     free(ret);
 

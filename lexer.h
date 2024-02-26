@@ -50,6 +50,7 @@ void destroy_tok(tok_T *, size_t);
 void lex_advance(tok_T *);
 
 bool is_symbol_start(char);
+bool is_symbol(char);
 
 // tok_T lex_match(char *);
 tok_T *lex(char *, size_t);
