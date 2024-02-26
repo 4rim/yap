@@ -33,16 +33,17 @@ typedef enum {
 typedef struct {
     Tok_type type;
     char *val;
-} Tok;
+    int idx;
+} Lex_T;
 
 void die(void);
 
 char *trim_whitespace(char *);
 
 void *lex_malloc(size_t);
-void destroy_tok(Tok *, size_t);
-void lex_advance(Tok *);
+void destroy_tok(Lex_T *, size_t);
+void lex_advance(Lex_T *);
 
-Tok *lex(char *, size_t);
-Tok *tok_init(size_t, char *);
-Tok *lex_peek(Tok *);
+Lex_T *lex(char *, size_t);
+Lex_T *tok_init(size_t, char *);
+Lex_T *lex_peek(Lex_T *);

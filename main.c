@@ -20,11 +20,11 @@ main(int argc, char **argv)
         usage();
 
     size_t len = strlen(argv[1]);
-    Tok* ret = lex_malloc(len);
+    Lex_T* ret = lex_malloc(len);
     int i = 0;
     ret = lex(argv[1], len);
 
-    Tok* t = ret;
+    Lex_T* t = ret;
 
     printf("[");
     for (i = 0; i < len-1; ++i, ++t) {
