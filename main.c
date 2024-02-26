@@ -9,7 +9,7 @@
 void
 usage(void)
 {
-    printf("./main \"<file name>\"");
+    printf("Usage: ./main <file name>\n");
     exit(EXIT_FAILURE);
 }
 

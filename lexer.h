@@ -16,15 +16,18 @@ typedef struct {
 } Entry;
 
 typedef enum {
-    // TOKEN_SYMBOL, // variable name?
+    TOKEN_END = 0,
     TOKEN_LPAREN,
     TOKEN_RPAREN,
     TOKEN_LBRACKET,
     TOKEN_RBRACKET,
     TOKEN_COLON,
     TOKEN_SEMICOLON,
+    TOKEN_PERIOD,
     TOKEN_KEYWORD, // types, e.g., int
-    TOKEN_COMMENT
+    TOKEN_STRING,
+    TOKEN_COMMENT,
+    TOKEN_NUMBER
 } Tok_type;
 
 typedef struct {
@@ -33,10 +36,13 @@ typedef struct {
 } Tok;
 
 void die(void);
+
+char *trim_whitespace(char *);
+
 void *lex_malloc(size_t);
 void destroy_tok(Tok *, size_t);
 void lex_advance(Tok *);
 
 Tok *lex(char *, size_t);
-Tok *create_tok(size_t);
+Tok *tok_init(size_t, char *);
 Tok *lex_peek(Tok *);

@@ -18,6 +18,29 @@ die(void)
     exit(EXIT_FAILURE);
 }
 
+char *
+trim_whitespace(char *c)
+{
+    /* Can use isspace() */
+    char *ret = lex_malloc(strlen(c) + 1);
+
+    char *iter = c;
+    char *curr = ret;
+
+    while (*iter != '\0') {
+        if (*iter == ' ' || *iter == 10  || *iter == 13  || *iter == '\t' ) 
+            iter++;
+        else { // not whitespace
+            *curr = *iter;
+            iter++;
+            curr++;
+        }
+    }
+    curr++;
+    *curr = '\0';
+    return ret;
+}
+
 void *
 lex_malloc(size_t s)
 {
@@ -29,8 +52,8 @@ lex_malloc(size_t s)
     return ret;
 }
 
-Tok*
-create_tok(size_t len)
+Tok *
+tok_init(size_t len, char *val)
 {
     Tok *ret = (Tok *) lex_malloc(len);
     return ret;
@@ -44,84 +67,115 @@ destroy_tok(Tok *t, size_t len)
     }
 }
 
-void lex_advance(Tok *in)
+void
+lex_advance(Tok *in)
 {
     
 }
 
-Tok *lex_peek(Tok *in)
+Tok *
+lex_peek(Tok *in)
 {
     Tok *ret = in;
     return ret;
 }
 
-/* TODO: Add peek function, refactor lex
- * Note that as of now, "curr" refers to the entire string rather than one "token", leading to incorrect behaviour
- * */
+/* TODO: Add strip_whitespace function
+ * Add peek function, refactor lex
+ */
 Tok*
 lex(char *s, size_t len)
 {
     // printf("Are we even getting here?!\n");
-    Tok *res = create_tok(len * sizeof(Tok));
+    Tok *res = tok_init(len * sizeof(Tok), 0);
     Tok *tokptr = res;
     int i = 0;
 
-    while (*s != '\0' || i < len){
-        char *curr = s;
+    char *in = trim_whitespace(s);
+
+    while (*in != '\0' || i < len){
+        char *curr = in;
         Tok *currtok = lex_malloc(sizeof(Tok));
         currtok->val = lex_malloc(sizeof(char));
         switch (*curr)
         {
-        case '\n':
-            s++;
+        case 10: // carriage return
+            in++;
             i++;
-            tokptr++;
+            break; // ignore whitespace
+        case 13: // newline
+            in++;
+            i++;
+            break; // ignore whitespace
+        case 32: // space
+            in++;
+            i++;
             break; // ignore whitespace
         case '{':
             currtok->type = TOKEN_LBRACKET;
             strncpy(currtok->val, curr, 1);
             memcpy(tokptr, currtok, sizeof(Tok));
+            in++;
+            i++;
+            tokptr++;
             break;
         case '}':
             currtok->type = TOKEN_RBRACKET;
             strncpy(currtok->val, curr, 1);
             memcpy(tokptr, currtok, sizeof(Tok));
+            in++;
+            i++;
+            tokptr++;
             break;
         case '(':
             currtok->type = TOKEN_LPAREN;
             strncpy(currtok->val, curr, 1);
             memcpy(tokptr, currtok, sizeof(Tok));
+            in++;
+            i++;
+            tokptr++;
             break;
         case ')':
             currtok->type = TOKEN_RPAREN;
             strncpy(currtok->val, curr, 1);
             memcpy(tokptr, currtok, sizeof(Tok));
+            in++;
+            i++;
+            tokptr++;
             break;
         case ';':
             currtok->type = TOKEN_SEMICOLON;
             strncpy(currtok->val, curr, 1);
             memcpy(tokptr, currtok, sizeof(Tok));
+            in++;
+            i++;
+            tokptr++;
             break;
         case ':':
             currtok->type = TOKEN_COLON;
             strncpy(currtok->val, curr, 1);
             memcpy(tokptr, currtok, sizeof(Tok));
+            in++;
+            i++;
+            tokptr++;
+            break;
+        case '.':
+            currtok->type = TOKEN_PERIOD;
+            strncpy(currtok->val, curr, 1);
+            memcpy(tokptr, currtok, sizeof(Tok));
+            in++;
+            i++;
+            tokptr++;
+            break;
+        default:
+            in++;
+            i++;
+            tokptr++;
             break;
         }
-        // if (*curr == ';' ||
-        //     *curr == ':') {
-        //     currtok->type = TOKEN_SEMICOLON;
-        //     strncpy(currtok->val, curr, 1);
-        //     memcpy(tokptr, currtok, sizeof(Tok));
-        // } 
-        // else {
-        //    s++;
-        //    i++;
-        //    continue;
-        // }
-        tokptr++;
-        s++;
-        i++;
+        // tokptr++;
+        // in++;
+        // i++;
     }
     return res;
 }
