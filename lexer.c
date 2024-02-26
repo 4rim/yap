@@ -21,7 +21,6 @@ die(void)
 char *
 trim_whitespace(char *c)
 {
-    /* Can use isspace() */
     char *ret = lex_malloc(strlen(c) + 1);
 
     char *iter = c;
@@ -52,51 +51,53 @@ lex_malloc(size_t s)
     return ret;
 }
 
-Lex_T *
+tok_T *
 tok_init(size_t len, char *val)
 {
-    Lex_T *ret = (Lex_T *) lex_malloc(len);
+    tok_T *ret = (tok_T *) lex_malloc(len);
     return ret;
 }
 
 void
-destroy_tok(Lex_T *t, size_t len)
+destroy_tok(tok_T *t, size_t len)
 {
-    for (int i = len; i < 0; --i, --t) {
-        free(t);
-    }
 }
 
 void
-lex_advance(Lex_T *in)
+lex_advance(tok_T *in)
 {
-    
+    in->idx++;
+    in->val++;
+    return;
 }
 
-Lex_T *
-lex_peek(Lex_T *in)
+tok_T *
+lex_peek(tok_T *in)
 {
-    Lex_T *ret = in;
+    tok_T *ret = in;
     return ret;
 }
 
 /* TODO: Add strip_whitespace function
  * Add peek function, refactor lex
  */
-Lex_T*
+tok_T*
 lex(char *s, size_t len)
 {
     // printf("Are we even getting here?!\n");
-    Lex_T *res = tok_init(len * sizeof(Lex_T), 0);
-    Lex_T *tokptr = res;
+    tok_T *res = tok_init(len * sizeof(tok_T), 0);
+    tok_T *tokptr = res;
     int i = 0;
 
     char *in = trim_whitespace(s);
 
+    size_t temp = strlen(in);
+
     while (*in != '\0' || i < len){
         char *curr = in;
-        Lex_T *currtok = lex_malloc(sizeof(Lex_T));
+        tok_T *currtok = lex_malloc(sizeof(tok_T));
         currtok->val = lex_malloc(sizeof(char));
+        currtok->idx = temp;
         if (*curr == 10 || *curr == 13 || *curr == 32){
             in++;
             i++;
@@ -106,37 +107,37 @@ lex(char *s, size_t len)
             case '{':
                 currtok->type = TOKEN_LBRACKET;
                 strncpy(currtok->val, curr, 1);
-                memcpy(tokptr, currtok, sizeof(Lex_T));
+                memcpy(tokptr, currtok, sizeof(tok_T));
                 break;
             case '}':
                 currtok->type = TOKEN_RBRACKET;
                 strncpy(currtok->val, curr, 1);
-                memcpy(tokptr, currtok, sizeof(Lex_T));
+                memcpy(tokptr, currtok, sizeof(tok_T));
                 break;
             case '(':
                 currtok->type = TOKEN_LPAREN;
                 strncpy(currtok->val, curr, 1);
-                memcpy(tokptr, currtok, sizeof(Lex_T));
+                memcpy(tokptr, currtok, sizeof(tok_T));
                 break;
             case ')':
                 currtok->type = TOKEN_RPAREN;
                 strncpy(currtok->val, curr, 1);
-                memcpy(tokptr, currtok, sizeof(Lex_T));
+                memcpy(tokptr, currtok, sizeof(tok_T));
                 break;
             case ';':
                 currtok->type = TOKEN_SEMICOLON;
                 strncpy(currtok->val, curr, 1);
-                memcpy(tokptr, currtok, sizeof(Lex_T));
+                memcpy(tokptr, currtok, sizeof(tok_T));
                 break;
             case ':':
                 currtok->type = TOKEN_COLON;
                 strncpy(currtok->val, curr, 1);
-                memcpy(tokptr, currtok, sizeof(Lex_T));
+                memcpy(tokptr, currtok, sizeof(tok_T));
                 break;
             case '.':
                 currtok->type = TOKEN_PERIOD;
                 strncpy(currtok->val, curr, 1);
-                memcpy(tokptr, currtok, sizeof(Lex_T));
+                memcpy(tokptr, currtok, sizeof(tok_T));
                 break;
             default:
                 break;

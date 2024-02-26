@@ -20,14 +20,14 @@ main(int argc, char **argv)
         usage();
 
     size_t len = strlen(argv[1]);
-    Lex_T* ret = lex_malloc(len);
+    tok_T* ret = lex_malloc(len);
     int i = 0;
     ret = lex(argv[1], len);
 
-    Lex_T* t = ret;
+    tok_T* t = ret;
 
     printf("[");
-    for (i = 0; i < len-1; ++i, ++t) {
+    for (i = 0; i < ret->idx - 1; ++i, ++t) {
         printf("(%d, \"%s\")", t->type, t->val);
         printf(" ");
     }

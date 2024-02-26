@@ -34,16 +34,16 @@ typedef struct {
     Tok_type type;
     char *val;
     int idx;
-} Lex_T;
+} tok_T;
 
 void die(void);
 
 char *trim_whitespace(char *);
 
 void *lex_malloc(size_t);
-void destroy_tok(Lex_T *, size_t);
-void lex_advance(Lex_T *);
+void destroy_tok(tok_T *, size_t);
+void lex_advance(tok_T *);
 
-Lex_T *lex(char *, size_t);
-Lex_T *tok_init(size_t, char *);
-Lex_T *lex_peek(Lex_T *);
+tok_T *lex(char *, size_t);
+tok_T *tok_init(size_t, char *);
+tok_T *lex_peek(tok_T *);
