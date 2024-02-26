@@ -3,10 +3,7 @@
 #endif
 
 #include <stdlib.h>
-
-#define LEX_YAP_TYPE_INT 0
-#define LEX_YAP_TYPE_SHORT 1
-#define LEX_YAP_TYPE_FLOAT 2
+#include <stdbool.h>
 
 #define LEX_YAP_FUNC_PRINT 11
 
@@ -16,7 +13,7 @@ typedef struct {
 } Entry;
 
 typedef enum {
-    TOKEN_END = 0,
+    TOKEN_EOF = 0,
     TOKEN_LPAREN,
     TOKEN_RPAREN,
     TOKEN_LBRACKET,
@@ -24,26 +21,37 @@ typedef enum {
     TOKEN_COLON,
     TOKEN_SEMICOLON,
     TOKEN_PERIOD,
+    TOKEN_COMMENT,
+    TOKEN_EQ,
+    TOKEN_MINUS,
+    TOKEN_PLUS,
+    TOKEN_TIMES,
+    TOKEN_DIV,
+    TOKEN_MOD,
     TOKEN_KEYWORD, // types, e.g., int
     TOKEN_STRING,
-    TOKEN_COMMENT,
-    TOKEN_NUMBER
+    TOKEN_DIGIT,
+    TOKEN_SYMB
 } Tok_type;
 
 typedef struct {
     Tok_type type;
     char *val;
-    int idx;
+    size_t len;
 } tok_T;
 
 void die(void);
 
 char *trim_whitespace(char *);
+char *scan_ident(char *);
 
 void *lex_malloc(size_t);
 void destroy_tok(tok_T *, size_t);
 void lex_advance(tok_T *);
 
+bool is_symbol_start(char);
+
+// tok_T lex_match(char *);
 tok_T *lex(char *, size_t);
 tok_T *tok_init(size_t, char *);
 tok_T *lex_peek(tok_T *);

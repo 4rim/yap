@@ -5,6 +5,8 @@
  * main should take in a file name as input. For now, we are pretending that
  * the first argument is the code line we are trying to lex, but this is
  * obviously incorrect lexing in general. */
+/* TODO: init-ing the tok is not being done correctly in main(), there are
+ * garbage values */
 
 void
 usage(void)
@@ -26,13 +28,19 @@ main(int argc, char **argv)
 
     tok_T* t = ret;
 
+    if (ret->len <= 0) {
+        destroy_tok(ret, 1);
+        return EXIT_SUCCESS;
+    }
+
     printf("[");
-    for (i = 0; i < ret->idx - 1; ++i, ++t) {
+    for (i = 0; i < ret->len - 1; ++i, ++t) {
         printf("(%d, \"%s\")", t->type, t->val);
         printf(" ");
     }
     printf("(%d, \"%s\")", t->type, t->val);
     printf("]\n");
+
     free(ret);
 
     return EXIT_SUCCESS;

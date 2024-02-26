@@ -2,13 +2,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 #include "lexer.h"
 
 Entry keyword_dict[] = {
-    { LEX_YAP_TYPE_INT, "int" },
+    /* { LEX_YAP_TYPE_INT, "int" },
     { LEX_YAP_TYPE_FLOAT, "float" },
     { LEX_YAP_TYPE_SHORT, "short" },
-    { LEX_YAP_FUNC_PRINT, "print" }
+    { LEX_YAP_FUNC_PRINT, "print" } */
+    0
 };
 
 void
@@ -17,6 +19,7 @@ die(void)
     fprintf(stderr, "OOPS!");
     exit(EXIT_FAILURE);
 }
+
 
 char *
 trim_whitespace(char *c)
@@ -55,6 +58,9 @@ tok_T *
 tok_init(size_t len, char *val)
 {
     tok_T *ret = (tok_T *) lex_malloc(len);
+    ret->len = 0;
+    ret->val = val;
+    ret->type = TOKEN_EOF;
     return ret;
 }
 
@@ -63,10 +69,22 @@ destroy_tok(tok_T *t, size_t len)
 {
 }
 
+char *
+scan_ident(char *c)
+{
+    char *iter = c;
+    char *ret = calloc(strlen(c), sizeof(char));
+    while (iter != NULL && isalpha(*iter)) {
+        strncat(ret, iter, sizeof(char));
+        iter++;
+    }
+    return ret;
+}
+
 void
 lex_advance(tok_T *in)
 {
-    in->idx++;
+    in->len++;
     in->val++;
     return;
 }
@@ -78,7 +96,20 @@ lex_peek(tok_T *in)
     return ret;
 }
 
-/* TODO: Add strip_whitespace function
+tok_T
+lex_match(char *in)
+{
+    tok_T ret = {0};
+    return ret;
+}
+
+bool
+is_symbol_start(char x)
+{
+    return isalpha(x) || x == '_';
+}
+
+/* TODO: 
  * Add peek function, refactor lex
  */
 tok_T*
@@ -97,9 +128,25 @@ lex(char *s, size_t len)
         char *curr = in;
         tok_T *currtok = lex_malloc(sizeof(tok_T));
         currtok->val = lex_malloc(sizeof(char));
-        currtok->idx = temp;
-        if (*curr == 10 || *curr == 13 || *curr == 32){
+        currtok->len = temp;
+        if (*curr == 10 || *curr == 13 || *curr == 32) {
             in++;
+            i++;
+        } else if (isdigit(*curr)) {
+            currtok->type = TOKEN_DIGIT;
+            strncpy(currtok->val, curr, 1);
+            memcpy(tokptr, currtok, sizeof(tok_T));
+            tokptr++;
+            in++;
+            i++;
+        } else if (isalpha(*curr)) {
+            // Implement a "scan_string" function?
+            currtok->type = TOKEN_SYMB;
+            currtok->val = scan_ident(curr);
+            strncpy(currtok->val, curr, sizeof(char));
+            memcpy(tokptr, currtok, sizeof(tok_T));
+            tokptr += strlen(currtok->val);
+            in += strlen(currtok->val);
             i++;
         } else {
             switch (*curr)
@@ -136,6 +183,41 @@ lex(char *s, size_t len)
                 break;
             case '.':
                 currtok->type = TOKEN_PERIOD;
+                strncpy(currtok->val, curr, 1);
+                memcpy(tokptr, currtok, sizeof(tok_T));
+                break;
+            case '#':
+                currtok->type = TOKEN_COMMENT;
+                strncpy(currtok->val, curr, 1);
+                memcpy(tokptr, currtok, sizeof(tok_T));
+                break;
+            case '-':
+                currtok->type = TOKEN_MINUS;
+                strncpy(currtok->val, curr, 1);
+                memcpy(tokptr, currtok, sizeof(tok_T));
+                break;
+            case '+':
+                currtok->type = TOKEN_PLUS;
+                strncpy(currtok->val, curr, 1);
+                memcpy(tokptr, currtok, sizeof(tok_T));
+                break;
+            case '*':
+                currtok->type = TOKEN_TIMES;
+                strncpy(currtok->val, curr, 1);
+                memcpy(tokptr, currtok, sizeof(tok_T));
+                break;
+            case '/':
+                currtok->type = TOKEN_DIV;
+                strncpy(currtok->val, curr, 1);
+                memcpy(tokptr, currtok, sizeof(tok_T));
+                break;
+            case '%':
+                currtok->type = TOKEN_MOD;
+                strncpy(currtok->val, curr, 1);
+                memcpy(tokptr, currtok, sizeof(tok_T));
+                break;
+            case '=':
+                currtok->type = TOKEN_EQ;
                 strncpy(currtok->val, curr, 1);
                 memcpy(tokptr, currtok, sizeof(tok_T));
                 break;
